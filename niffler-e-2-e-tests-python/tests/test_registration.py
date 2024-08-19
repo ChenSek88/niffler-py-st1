@@ -20,8 +20,8 @@ def test_registration_with_diff_passwords(user_for_reg):
         registration_page.assert_bad_registration('Passwords should be equal')
 
 
-def test_registration_an_existing_user(test_user):
-        username, password = test_user
+def test_registration_an_existing_user(registration):
+        username, password = registration
         registration_page = RegistrationPage()
         registration_page.user_registration(username, password)
         registration_page.assert_bad_registration(f'Username `{username}` already exists')
