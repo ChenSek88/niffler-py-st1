@@ -1,5 +1,5 @@
 from .base_page import BasePage
-from selene import browser
+
 
 class ProfilePage(BasePage):
     def assert_category_title(self, expected_text):
@@ -26,3 +26,6 @@ class ProfilePage(BasePage):
         surname_value = self.find_element('input[name=surname]').get_attribute('value')
         assert name_value == name
         assert surname_value == surname
+
+
+profile_page=ProfilePage()

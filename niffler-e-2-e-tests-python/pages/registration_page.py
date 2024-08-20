@@ -22,3 +22,6 @@ class RegistrationPage(BasePage):
 
     def assert_bad_registration(self, expected_text):
         self.assert_text('#register-form .form__error', expected_text)
+
+
+registration_page=RegistrationPage()

@@ -1,5 +1,4 @@
 from .base_page import BasePage
-from selene import have
 
 
 class LoginPage(BasePage):
@@ -13,3 +12,6 @@ class LoginPage(BasePage):
 
     def assert_bad_login(self, expected_text):
         self.assert_text('[action*=login] .form__error', expected_text)
+
+
+login_page = LoginPage()

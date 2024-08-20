@@ -1,17 +1,19 @@
-from pages.registration_page import RegistrationPage
-from pages.login_page import LoginPage
-from pages.main_page import MainPage
+from pages.login_page import login_page
+from pages.main_page import main_page
+from pages.profile_page import profile_page
 
 
+AMOUNT = '50000'
 CATEGORY = 'QAGURU'
+DESCRIPTION = 'QA_GURU PYTHON ADVANCED'
 
 
-def test_add_spending(registration):
+def test_add_spending(registration, logout):
         username, password = registration
-        login_page = LoginPage()
         login_page.login(username, password)
-        main_page = MainPage()
         main_page.go_to_profile()
-        profile_page = ProfilePage()
         profile_page.add_category(CATEGORY)
-        assert any(x.text == CATEGORY for x in profile_page.spending_categories())
+        main_page.go_to_main_page()
+        main_page.add_spending(CATEGORY, AMOUNT, DESCRIPTION)
+        main_page.assert_alert_message_and_close('Spending successfully added')
+        main_page.spending_added(CATEGORY, AMOUNT, DESCRIPTION)
