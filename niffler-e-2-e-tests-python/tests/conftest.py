@@ -24,13 +24,13 @@ def front_url():
 
 
 @pytest.fixture(scope="session")
-def test_user():
+def app_user():
     return os.getenv("TEST_USER"), os.getenv("TEST_PASSWORD")
 
 
 @pytest.fixture()
-def login_test_user(test_user):
-    username, password = test_user
+def login_app_user(app_user):
+    username, password = app_user
     login_page.login(username, password)
 
 
@@ -48,7 +48,7 @@ def user_for_reg():
 
 
 @pytest.fixture()
-def update_profile_data():
+def profile_data():
     name = fake.first_name()
     surname = fake.last_name()
     return name, surname

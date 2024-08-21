@@ -8,9 +8,7 @@ CATEGORY = 'QAGURU'
 DESCRIPTION = 'QA_GURU PYTHON ADVANCED'
 
 
-def test_add_spending(registration, logout):
-        username, password = registration
-        login_page.login(username, password)
+def test_add_spending(login_app_user, logout):
         main_page.go_to_profile()
         profile_page.add_category(CATEGORY)
         main_page.go_to_main_page()
