@@ -3,7 +3,9 @@ from selene import have
 
 
 class MainPage(BasePage):
-    logout = '.header__logout button'
+
+    def logout(self):
+        self.find_element('.header__logout button').click()
 
 
     def assert_alert_message_and_close(self, expected_text):
@@ -20,7 +22,7 @@ class MainPage(BasePage):
 
 
     def go_to_main_page(self):
-        self.open_url('http://frontend.niffler.dc/main')
+        self.find_element('a[href*=main]').click()
 
 
     def add_spending(self, CATEGORY, AMOUNT, DESCRIPTION):
@@ -32,12 +34,10 @@ class MainPage(BasePage):
         self.find_element('.add-spending__form .button').click()
 
 
-    def spending_added(self, CATEGORY, AMOUNT, DESCRIPTION):
+    def spending_added(self, AMOUNT, CATEGORY, DESCRIPTION):
         spending_table = self.find_element('.spendings-table tbody tr')
-        elements = spending_table.elements('td .value-container')
-        assert any(x.text == AMOUNT for x in elements)
-        assert any(x.text == CATEGORY for x in elements)
-        assert any(x.text == DESCRIPTION for x in elements)
+        elements = spending_table.all('td .value-container')
+        elements.should(have._texts_like(AMOUNT, CATEGORY, DESCRIPTION))
 
 
 main_page=MainPage()

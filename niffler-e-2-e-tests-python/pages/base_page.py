@@ -1,9 +1,12 @@
-from selene.support.jquery_style_selectors import s
-from selene import browser
+from selene.support.shared.jquery_style import s
+from selene import browser, have
+
 
 class BasePage:
+
     def open_url(self, url):
-        browser.open_url(url)
+        browser.driver.maximize_window()
+        browser.open(url)
 
 
     def find_element(self, selector):
@@ -11,5 +14,4 @@ class BasePage:
 
 
     def assert_text(self, selector, expected_text):
-        actual_text = self.find_element(selector).text
-        assert actual_text == expected_text
+        self.find_element(selector).should(have.text(expected_text))

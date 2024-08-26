@@ -20,12 +20,12 @@ def envs():
 
 @pytest.fixture(scope="session")
 def front_url():
-    return os.getenv("FRONT_URL")
+    return os.getenv("FRONTEND_URL")
 
 
 @pytest.fixture(scope="session")
 def app_user():
-    return os.getenv("TEST_USER"), os.getenv("TEST_PASSWORD")
+    return os.getenv("TEST_USERNAME"), os.getenv("TEST_PASSWORD")
 
 
 @pytest.fixture()
@@ -37,7 +37,7 @@ def login_app_user(app_user):
 @pytest.fixture()
 def logout():
     yield
-    browser.element(main_page.logout).click()
+    main_page.logout()
 
 
 @pytest.fixture()

@@ -3,14 +3,14 @@ from pages.login_page import login_page
 from pages.profile_page import profile_page
 
 
-TEST_CATEGORY = 'QAGURU'
+TEST_CATEGORY = 'EDUCATION'
 
 
 def test_add_new_category(login_app_user, logout):
         main_page.go_to_profile()
         profile_page.add_category(TEST_CATEGORY)
         main_page.assert_alert_message_and_close('New category added')
-        assert any(x.text == TEST_CATEGORY for x in profile_page.spending_categories())
+        profile_page.assert_added_category(TEST_CATEGORY)
 
 
 def test_update_profile_settings(login_app_user, profile_data, logout):
