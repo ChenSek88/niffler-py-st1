@@ -2,6 +2,7 @@ from .base_page import BasePage
 
 
 class LoginPage(BasePage):
+
     def login(self, username, password):
         self.open_url('http://frontend.niffler.dc')
         self.find_element('a[href*=redirect]').click()

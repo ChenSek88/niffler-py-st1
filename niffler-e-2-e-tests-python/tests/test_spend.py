@@ -1,4 +1,3 @@
-from pages.login_page import login_page
 from pages.main_page import main_page
 from pages.profile_page import profile_page
 

@@ -2,6 +2,7 @@ from .base_page import BasePage
 
 
 class RegistrationPage(BasePage):
+
     def user_registration(self, username, password):
         self.open_url('http://frontend.niffler.dc')
         self.find_element('a[href*=register]').click()

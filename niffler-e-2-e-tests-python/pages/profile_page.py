@@ -3,6 +3,7 @@ from selene import have
 
 
 class ProfilePage(BasePage):
+
     def assert_category_title(self, expected_text):
         self.find_element('.main-content__section-add-category h2')
 
