@@ -1,5 +1,5 @@
 from .base_page import BasePage
-from selene import have
+from selene import browser, have, command
 
 
 class MainPage(BasePage):
@@ -17,12 +17,24 @@ class MainPage(BasePage):
         self.assert_text('.header__title', expected_text)
 
 
+    def assert_spending_section_title(self, expected_text):
+        self.assert_text('.main-content__section-history h2', expected_text)
+
+
     def go_to_profile(self):
         self.find_element('a[href*=profile]').click()
 
 
     def go_to_main_page(self):
         self.find_element('a[href*=main]').click()
+
+
+    def go_to_friends(self):
+        self.find_element('a[href*=friends]').click()
+
+
+    def go_to_people(self):
+        self.find_element('a[href*=people]').click()
 
 
     def add_spending(self, CATEGORY, AMOUNT, DESCRIPTION):
@@ -38,6 +50,15 @@ class MainPage(BasePage):
         spending_table = self.find_element('.spendings-table tbody tr')
         elements = spending_table.all('td .value-container')
         elements.should(have._texts_like(AMOUNT, CATEGORY, DESCRIPTION))
+
+
+    def delete_spending(self):
+        browser.element('.spendings-table tbody input[type=checkbox]').perform(command.js.scroll_into_view).click()
+        self.find_element('.spendings__bulk-actions button').click()
+
+
+    def spending_table_is_empty(self, expected_text):
+        self.find_element('.spendings__content').should(have.text(expected_text))
 
 
 main_page=MainPage()
