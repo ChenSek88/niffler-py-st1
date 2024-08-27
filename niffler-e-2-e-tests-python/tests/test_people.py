@@ -4,6 +4,6 @@ from marks import Pages
 
 
 @Pages.spending_page
-def test_empty_friends_table(logout):
+def test_empty_people_table(logout):
         main_page.go_to_people()
         people_page.assert_empty_people_table('There are no other users yet!')
