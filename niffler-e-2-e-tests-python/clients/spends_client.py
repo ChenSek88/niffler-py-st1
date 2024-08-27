@@ -2,6 +2,7 @@ from urllib.parse import urljoin
 
 import requests
 
+from models.spend import Category, Spend, SpendAdd
 
 class SpendsHttpClient:
 
@@ -17,31 +18,46 @@ class SpendsHttpClient:
             'Content-Type': 'application/json'
         })
 
-    def get_categories(self):
+
+    def get_categories(self) -> list[Category]:
         categories = self.session.get(urljoin(self.base_url, "/api/categories/all"))
         categories.raise_for_status()
-        return categories.json()
+        return [Category.model_validate(item) for item in categories.json()]
 
-    def add_category(self, name: str):
+
+    def add_category(self, name: str) -> Category:
         category = self.session.post(urljoin(self.base_url, "/api/categories/add"), json={
             "category": name
         })
         category.raise_for_status()
-        return category.json()
+        return Category.model_validate(category.json())
 
-    def add_spends(self, body):
+
+    def add_spends(self, spend: SpendAdd) -> Spend:
         url = urljoin(self.base_url, "/api/spends/add")
-        spends = self.session.post(url, json=body)
-        spends.raise_for_status()
-        return spends.json()
+        response = self.session.post(url, json=spend.model_dump())
+        self.raise_for_status(response)
+        return Spend.model_validate(response.json())
 
-    def get_spends(self):
+
+    def get_spends(self) -> list[Spend]:
         url = urljoin(self.base_url, "/api/spends/all")
-        all_spends = self.session.get(url)
-        all_spends.raise_for_status()
-        return all_spends.json()
+        response = self.session.get(url)
+        self.raise_for_status(response)
+        return [Spend.model_validate(item) for item in response.json()]
 
-    def remove_spends(self, ids: list[int]):
+
+    def remove_spends(self, ids: list[str]):
         url = urljoin(self.base_url, "/api/spends/remove")
-        spends = self.session.delete(url, params={"ids": ids})
-        spends.raise_for_status()
+        response = self.session.delete(url, params={"ids": ids})
+        self.raise_for_status(response)
+
+
+    @staticmethod
+    def raise_for_status(response: requests.Response):
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as e:
+            if response.status_code == 400:
+                e.add_note(response.text)
+                raise

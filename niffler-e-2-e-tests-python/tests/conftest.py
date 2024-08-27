@@ -1,6 +1,5 @@
-import json
 import os
-import dotenv
+from dotenv import load_dotenv
 import pytest
 import requests
 from selene import browser
@@ -10,29 +9,28 @@ from clients.spends_client import SpendsHttpClient
 from pages.main_page import main_page
 from pages.login_page import login_page
 import requests
+from databases.spend_db import SpendDb
+from models.config import Envs
 
 
 fake = Faker()
 
 
-@pytest.fixture(autouse=True, scope="session")
-def envs():
-    dotenv.load_dotenv()
+@pytest.fixture(scope="session")
+def envs() -> Envs:
+    load_dotenv()
+    return Envs(
+        frontend_url=os.getenv("FRONTEND_URL"),
+        gateway_url=os.getenv("GATEWAY_URL"),
+        spend_db_url=os.getenv("SPEND_DB_URL"),
+        test_username=os.getenv("TEST_USERNAME"),
+        test_password=os.getenv("TEST_PASSWORD")
+    )
 
 
 @pytest.fixture(scope="session")
-def front_url(envs):
-    return os.getenv("FRONTEND_URL")
-
-
-@pytest.fixture(scope="session")
-def gateway_url(envs):
-    return os.getenv("GATEWAY_URL")
-
-
-@pytest.fixture(scope="session")
-def app_user():
-    return os.getenv("TEST_USERNAME"), os.getenv("TEST_PASSWORD")
+def app_user(envs):
+    return envs.test_username, envs.test_password
 
 
 @pytest.fixture()
@@ -66,11 +64,11 @@ def profile_data():
 
 
 @pytest.fixture()
-def registration(front_url, user_for_reg):
-    cookie = requests.get(f"{front_url}:9000/register").headers['x-xsrf-token']
+def registration(envs, user_for_reg):
+    cookie = requests.get(f"{envs.frontend_url}:9000/register").headers['x-xsrf-token']
     username, password = user_for_reg
     user_data = {"_csrf": cookie, "username": username, "password": password, "passwordSubmit": password}
-    user = requests.post(f"{front_url}:9000/register",
+    user = requests.post(f"{envs.frontend_url}:9000/register",
         data=user_data,
         headers={'Content-Type': 'application/x-www-form-urlencoded', 'Cookie': f'XSRF-TOKEN={cookie}'}
     )
@@ -79,18 +77,21 @@ def registration(front_url, user_for_reg):
 
 
 @pytest.fixture()
-def spends_client(gateway_url, login_app_user) -> SpendsHttpClient:
-    return SpendsHttpClient(gateway_url, login_app_user)
+def spends_client(envs, login_app_user) -> SpendsHttpClient:
+    return SpendsHttpClient(envs.gateway_url, login_app_user)
+
+
+@pytest.fixture(scope="session")
+def spend_db(envs) -> SpendDb:
+    return SpendDb(envs.spend_db_url)
 
 
 @pytest.fixture(params=[])
-def category(request, spends_client):
+def category(request, spends_client, spend_db):
     category_name = request.param
-    current_categories = spends_client.get_categories()
-    category_names = [category["category"] for category in current_categories]
-    if category_name not in category_names:
-        spends_client.add_category(category_name)
-    return category_name
+    category = spends_client.add_category(category_name)
+    yield category.category
+    spend_db.delete_category(category.id)
 
 
 @pytest.fixture(params=[])
@@ -98,8 +99,8 @@ def spends(request, spends_client):
     test_spend = spends_client.add_spends(request.param)
     yield test_spend
     all_spends = spends_client.get_spends()
-    if test_spend["id"] in [spend["id"] for spend in all_spends]:
-        spends_client.remove_spends([test_spend["id"]])
+    if test_spend.id in [spend.id for spend in all_spends]:
+        spends_client.remove_spends([test_spend.id])
 
 
 @pytest.fixture()
@@ -107,9 +108,17 @@ def remove_all_spends(request, spends_client):
     yield
     all_spends = spends_client.get_spends()
     for spend in all_spends:
-        spends_client.remove_spends([spend["id"]])
+        spends_client.remove_spends([spend.id])
 
 
 @pytest.fixture()
-def spending_page(login_app_user, front_url):
-    browser.open(front_url)
+def remove_all_categories(request, spends_client, spend_db):
+    yield
+    categories = spends_client.get_categories()
+    for category in categories:
+        spend_db.delete_category(category.id)
+
+
+@pytest.fixture()
+def spending_page(login_app_user, envs):
+    browser.open(envs.frontend_url)

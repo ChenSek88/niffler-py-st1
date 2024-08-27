@@ -7,7 +7,7 @@ TEST_CATEGORY = 'EDUCATION'
 
 
 @Pages.spending_page
-def test_add_new_category(logout):
+def test_add_new_category(remove_all_categories, logout):
         main_page.go_to_profile()
         profile_page.add_category(TEST_CATEGORY)
         main_page.assert_alert_message_and_close('New category added')
