@@ -10,6 +10,7 @@ from pages.main_page import main_page
 from pages.login_page import login_page
 import requests
 from databases.spend_db import SpendDb
+from databases.user_db import UserDb
 from models.config import Envs
 
 
@@ -23,6 +24,7 @@ def envs() -> Envs:
         frontend_url=os.getenv("FRONTEND_URL"),
         gateway_url=os.getenv("GATEWAY_URL"),
         spend_db_url=os.getenv("SPEND_DB_URL"),
+        user_db_url=os.getenv("USER_DB_URL"),
         test_username=os.getenv("TEST_USERNAME"),
         test_password=os.getenv("TEST_PASSWORD")
     )
@@ -64,7 +66,7 @@ def profile_data():
 
 
 @pytest.fixture()
-def registration(envs, user_for_reg):
+def registration(envs, user_for_reg, user_db):
     cookie = requests.get(f"{envs.frontend_url}:9000/register").headers['x-xsrf-token']
     username, password = user_for_reg
     user_data = {"_csrf": cookie, "username": username, "password": password, "passwordSubmit": password}
@@ -72,8 +74,9 @@ def registration(envs, user_for_reg):
         data=user_data,
         headers={'Content-Type': 'application/x-www-form-urlencoded', 'Cookie': f'XSRF-TOKEN={cookie}'}
     )
-    return username, password
-
+    yield username, password
+    user_db.delete_user_authority(username)
+    user_db.delete_user(username)
 
 
 @pytest.fixture()
@@ -84,6 +87,11 @@ def spends_client(envs, login_app_user) -> SpendsHttpClient:
 @pytest.fixture(scope="session")
 def spend_db(envs) -> SpendDb:
     return SpendDb(envs.spend_db_url)
+
+
+@pytest.fixture(scope="session")
+def user_db(envs) -> UserDb:
+    return UserDb(envs.user_db_url)
 
 
 @pytest.fixture(params=[])
@@ -122,3 +130,4 @@ def remove_all_categories(request, spends_client, spend_db):
 @pytest.fixture()
 def spending_page(login_app_user, envs):
     browser.open(envs.frontend_url)
+
