@@ -18,10 +18,10 @@ class UserDb:
             user_id = session.exec(query).first()
 
             query2 = select(Authority.id).where(Authority.user_id == user_id)
-            auth_ids = [r for r in session.exec(query2)]
-            for a in auth_ids:
-                user_auth = session.get(Authority, a)
-                session.delete(user_auth)
+            authority_ids = [r for r in session.exec(query2)]
+            for authority in authority_ids:
+                user_authority = session.get(Authority, authority)
+                session.delete(user_authority)
             session.commit()
 
 
