@@ -3,11 +3,12 @@ from pages.login_page import login_page
 from pages.main_page import main_page
 
 
-def test_registration_successful(user_for_reg, logout):
+def test_registration_successful(user_for_reg, delete_user, logout):
         username, password = user_for_reg
         registration_page.user_registration(username, password)
         login_page.login(username, password)
         main_page.assert_main_page_title('Niffler. The coin keeper.')
+        delete_user(username)
 
 
 def test_registration_with_diff_passwords(user_for_reg):

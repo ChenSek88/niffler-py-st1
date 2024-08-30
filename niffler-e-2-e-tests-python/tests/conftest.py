@@ -11,6 +11,7 @@ from pages.login_page import login_page
 import requests
 from databases.spend_db import SpendDb
 from databases.user_db import UserDb
+from databases.userdata_db import UserDataDb
 from models.config import Envs
 
 
@@ -25,6 +26,7 @@ def envs() -> Envs:
         gateway_url=os.getenv("GATEWAY_URL"),
         spend_db_url=os.getenv("SPEND_DB_URL"),
         user_db_url=os.getenv("USER_DB_URL"),
+        userdata_db_url=os.getenv("USERDATA_DB_URL"),
         test_username=os.getenv("TEST_USERNAME"),
         test_password=os.getenv("TEST_PASSWORD")
     )
@@ -66,20 +68,6 @@ def profile_data():
 
 
 @pytest.fixture()
-def registration(envs, user_for_reg, user_db):
-    cookie = requests.get(f"{envs.frontend_url}:9000/register").headers['x-xsrf-token']
-    username, password = user_for_reg
-    user_data = {"_csrf": cookie, "username": username, "password": password, "passwordSubmit": password}
-    user = requests.post(f"{envs.frontend_url}:9000/register",
-        data=user_data,
-        headers={'Content-Type': 'application/x-www-form-urlencoded', 'Cookie': f'XSRF-TOKEN={cookie}'}
-    )
-    yield username, password
-    user_db.delete_user_authority(username)
-    user_db.delete_user(username)
-
-
-@pytest.fixture()
 def spends_client(envs, login_app_user) -> SpendsHttpClient:
     return SpendsHttpClient(envs.gateway_url, login_app_user)
 
@@ -92,6 +80,35 @@ def spend_db(envs) -> SpendDb:
 @pytest.fixture(scope="session")
 def user_db(envs) -> UserDb:
     return UserDb(envs.user_db_url)
+
+
+@pytest.fixture(scope="session")
+def userdata_db(envs) -> UserDataDb:
+    return UserDataDb(envs.userdata_db_url)
+
+
+@pytest.fixture()
+def registration(envs, user_for_reg, user_db, userdata_db):
+    cookie = requests.get(f"{envs.frontend_url}:9000/register").headers['x-xsrf-token']
+    username, password = user_for_reg
+    user_data = {"_csrf": cookie, "username": username, "password": password, "passwordSubmit": password}
+    requests.post(f"{envs.frontend_url}:9000/register",
+        data=user_data,
+        headers={'Content-Type': 'application/x-www-form-urlencoded', 'Cookie': f'XSRF-TOKEN={cookie}'}
+    )
+    yield username, password
+    user_db.delete_user_authority(username)
+    userdata_db.delete_userdata(username)
+    user_db.delete_user(username)
+
+
+@pytest.fixture
+def delete_user(user_db, userdata_db):
+    def delete(username):
+        user_db.delete_user_authority(username)
+        userdata_db.delete_userdata(username)
+        user_db.delete_user(username)
+    return delete
 
 
 @pytest.fixture(params=[])

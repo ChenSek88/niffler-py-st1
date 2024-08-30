@@ -1,7 +1,9 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, MetaData
 
+metadata = MetaData()
 
 class User(SQLModel, table=True):
+    metadata = metadata
     id: str = Field(default=None, primary_key=True)
     username: str
     password: str
@@ -12,6 +14,7 @@ class User(SQLModel, table=True):
 
 
 class Authority(SQLModel, table=True):
+    metadata = metadata
     id: str = Field(default=None, primary_key=True)
     user_id: str
     authority: str
