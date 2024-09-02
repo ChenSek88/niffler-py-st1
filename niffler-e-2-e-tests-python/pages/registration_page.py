@@ -1,4 +1,5 @@
 from .base_page import BasePage
+from time import sleep
 
 
 class RegistrationPage(BasePage):

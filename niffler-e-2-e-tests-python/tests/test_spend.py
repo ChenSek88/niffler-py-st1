@@ -37,4 +37,3 @@ def test_delete_spending(category, spends, logout):
         main_page.delete_spending()
         main_page.assert_alert_message_and_close('Spendings deleted')
         main_page.spending_table_is_empty('No spendings provided yet!')
-
