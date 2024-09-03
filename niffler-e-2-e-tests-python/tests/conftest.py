@@ -5,6 +5,7 @@ from selene import browser
 from faker import Faker
 
 from clients.spends_client import SpendsHttpClient
+from clients.friends_client import FriendsHttpClient
 from pages.main_page import main_page
 from pages.login_page import login_page
 import requests
@@ -12,7 +13,6 @@ from databases.spend_db import SpendDb
 from databases.user_db import UserDb
 from databases.userdata_db import UserDataDb
 from models.config import Envs
-from time import sleep
 
 
 fake = Faker()
@@ -68,6 +68,11 @@ def profile_data():
 
 
 @pytest.fixture()
+def friends_client(envs, login_app_user) -> FriendsHttpClient:
+    return FriendsHttpClient(envs.gateway_url, login_app_user)
+
+
+@pytest.fixture()
 def spends_client(envs, login_app_user) -> SpendsHttpClient:
     return SpendsHttpClient(envs.gateway_url, login_app_user)
 
@@ -99,18 +104,21 @@ def registration(envs, user_for_reg, user_db, userdata_db):
     yield username, password
     user_db.delete_user_authority(username)
     user_db.delete_user(username)
-    # Форма регистрации восстанавливает запись в таблице user (niffler-userdata) после некоторой задержки.
-    # Это происходит даже в случае если срабатывает исключение 'Username `{username}` already exists'
-    # Если удалить запись с этим пользователем сразу, то она через некоторое время появится снова
-    # Возможно это баг
-    sleep(5)
     userdata_db.delete_friend_request(username)
     userdata_db.delete_userdata(username)
+
+
+@pytest.fixture()
+def friend_request(friends_client, userdata_db):
+    def add_friend(username):
+        friends_client.friend_request(username)
+    yield add_friend
 
 
 @pytest.fixture
 def delete_user(user_db, userdata_db):
     def delete(username):
+        userdata_db.delete_friend_request(username)
         userdata_db.delete_userdata(username)
         user_db.delete_user_authority(username)
         user_db.delete_user(username)

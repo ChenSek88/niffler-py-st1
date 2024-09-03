@@ -22,6 +22,8 @@ class UserDataDb:
 
     def delete_friend_request(self, username: str):
         query = delete(Friendship).where(Friendship.addressee_id == (select(User.id).where(User.username == username)).scalar_subquery())
+        query2 = delete(Friendship).where(Friendship.requester_id == (select(User.id).where(User.username == username)).scalar_subquery())
         with Session(self.engine) as session:
             session.exec(query)
+            session.exec(query2)
             session.commit()
