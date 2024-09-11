@@ -1,3 +1,5 @@
+import allure
+
 from pages.main_page import main_page
 from marks import Pages, TestData
 from models.spend import SpendAdd
