@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr
 
 
 class Envs(BaseModel):
@@ -8,4 +8,4 @@ class Envs(BaseModel):
     user_db_url: str
     userdata_db_url: str
     test_username: str
-    test_password: str
+    test_password: SecretStr

@@ -11,12 +11,14 @@ DESCRIPTION = "QA-GURU PYTHON ADVANCED"
 
 
 @Pages.spending_page
+@allure.story("Spending")
 def test_spending_title_exists(logout):
         main_page.assert_spending_section_title('History of spendings')
 
 
 @Pages.spending_page
 @TestData.category(CATEGORY)
+@allure.story("Spending")
 def test_add_spending(category, remove_all_spends, logout):
         main_page.add_spending(CATEGORY, AMOUNT, DESCRIPTION)
         main_page.assert_alert_message_and_close('Spending successfully added')
@@ -34,6 +36,7 @@ def test_add_spending(category, remove_all_spends, logout):
         currency="RUB"
     )
 )
+@allure.story("Spending")
 def test_delete_spending(category, spends, logout):
         main_page.spending_added(AMOUNT, CATEGORY, DESCRIPTION)
         main_page.delete_spending()

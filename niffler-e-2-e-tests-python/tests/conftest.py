@@ -42,6 +42,14 @@ def pytest_fixture_setup(fixturedef: FixtureDef, request: FixtureRequest):
     item.name = f"[{scope_letter}] " + " ".join(fixturedef.argname.split("_")).title()
 
 
+@pytest.hookimpl(hookwrapper=True, tryfirst=True)
+def pytest_runtest_teardown(item):
+    yield
+    reporter = allure_logger(item.config)
+    test = reporter.get_test(None)
+    test.labels = [x for x in test.labels if x.name != "tag"]
+
+
 @pytest.fixture(scope="session")
 def envs() -> Envs:
     load_dotenv()
@@ -60,7 +68,7 @@ def envs() -> Envs:
 
 @pytest.fixture(scope="session")
 def app_user(envs):
-    return envs.test_username, envs.test_password
+    return envs.test_username, envs.test_password.get_secret_value()
 
 
 @pytest.fixture()

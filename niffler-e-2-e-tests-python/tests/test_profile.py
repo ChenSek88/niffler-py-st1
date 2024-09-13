@@ -1,12 +1,14 @@
 from pages.main_page import main_page
 from pages.profile_page import profile_page
 from marks import Pages
+import allure
 
 
 TEST_CATEGORY = 'EDUCATION'
 
 
 @Pages.spending_page
+@allure.story("Profile")
 def test_add_new_category(remove_all_categories, logout):
         main_page.go_to_profile()
         profile_page.add_category(TEST_CATEGORY)
@@ -15,6 +17,7 @@ def test_add_new_category(remove_all_categories, logout):
 
 
 @Pages.spending_page
+@allure.story("Profile")
 def test_update_profile_settings(profile_data, logout):
         main_page.go_to_profile()
         name, surname = profile_data
