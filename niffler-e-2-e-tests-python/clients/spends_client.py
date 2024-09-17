@@ -1,3 +1,4 @@
+from time import sleep
 from urllib.parse import urljoin
 
 import allure
@@ -31,7 +32,7 @@ class SpendsHttpClient:
 
     def get_categories(self) -> list[Category]:
         categories = self.session.get(urljoin(self.base_url, "/api/categories/all"))
-        categories.raise_for_status()
+        self.raise_for_status(categories)
         return [Category.model_validate(item) for item in categories.json()]
 
 
@@ -39,7 +40,7 @@ class SpendsHttpClient:
         category = self.session.post(urljoin(self.base_url, "/api/categories/add"), json={
             "category": name
         })
-        category.raise_for_status()
+        self.raise_for_status(category)
         return Category.model_validate(category.json())
 
 

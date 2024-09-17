@@ -21,7 +21,6 @@ from databases.userdata_db import UserDataDb
 from models.config import Envs
 
 
-
 def allure_logger(config) -> AllureReporter:
     listener: AllureListener = config.pluginmanager.get_plugin("allure_listener")
     return listener.allure_logger
@@ -92,10 +91,12 @@ fake = Faker()
 
 
 @pytest.fixture(scope="session")
-def user_for_reg():
+def user_for_reg(user_db):
     username = fake.first_name()
     password = fake.password(length=10)
-    return username, password
+    yield username, password
+    user_db.delete_user_authority(username)
+    user_db.delete_user(username)
 
 
 @pytest.fixture()
@@ -140,10 +141,10 @@ def registration(envs, user_for_reg, user_db, userdata_db):
         headers={'Content-Type': 'application/x-www-form-urlencoded', 'Cookie': f'XSRF-TOKEN={cookie}'}
     )
     yield username, password
-    user_db.delete_user_authority(username)
-    user_db.delete_user(username)
     userdata_db.delete_friend_request(username)
     userdata_db.delete_userdata(username)
+    user_db.delete_user_authority(username)
+    user_db.delete_user(username)
 
 
 @pytest.fixture()
@@ -153,7 +154,7 @@ def friend_request(friends_client, userdata_db):
     yield add_friend
 
 
-@pytest.fixture
+@pytest.fixture()
 def delete_user(user_db, userdata_db):
     def delete(username):
         userdata_db.delete_friend_request(username)
@@ -199,4 +200,3 @@ def remove_all_categories(request: FixtureRequest, spends_client, spend_db):
 @pytest.fixture()
 def spending_page(login_app_user, envs):
     browser.open(envs.frontend_url)
-
