@@ -12,6 +12,7 @@ from faker import Faker
 
 from clients.spends_client import SpendsHttpClient
 from clients.friends_client import FriendsHttpClient
+from clients.auth_client import AuthClient
 from pages.main_page import main_page
 from pages.login_page import login_page
 import requests
@@ -55,6 +56,8 @@ def envs() -> Envs:
     envs_instance =  Envs(
         frontend_url=os.getenv("FRONTEND_URL"),
         gateway_url=os.getenv("GATEWAY_URL"),
+        auth_url=os.getenv("AUTH_URL"),
+        auth_secret=os.getenv("AUTH_SECRET"),
         spend_db_url=os.getenv("SPEND_DB_URL"),
         user_db_url=os.getenv("USER_DB_URL"),
         userdata_db_url=os.getenv("USERDATA_DB_URL"),
@@ -74,11 +77,18 @@ def app_user(envs):
 def login_app_user(app_user):
     username, password = app_user
     login_page.login(username, password)
-    id_token = None
+    '''id_token = None
     while id_token is None:
         id_token = browser.execute_script('return window.sessionStorage.getItem("id_token")')
     allure.attach(id_token, name="token.txt", attachment_type=AttachmentType.TEXT)
-    return id_token
+    return id_token'''
+
+
+@pytest.fixture(scope="session")
+def auth_api_token(envs: Envs):
+    token = AuthClient(envs).auth(envs.test_username, envs.test_password.get_secret_value())
+    allure.attach(token, name="token.txt", attachment_type=AttachmentType.TEXT)
+    return token
 
 
 @pytest.fixture()
@@ -90,7 +100,7 @@ def logout():
 fake = Faker()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def user_for_reg(user_db):
     username = fake.first_name()
     password = fake.password(length=10)
@@ -107,13 +117,13 @@ def profile_data():
 
 
 @pytest.fixture()
-def friends_client(envs, login_app_user) -> FriendsHttpClient:
-    return FriendsHttpClient(envs.gateway_url, login_app_user)
+def friends_client(envs, auth_api_token) -> FriendsHttpClient:
+    return FriendsHttpClient(envs.gateway_url, auth_api_token)
 
 
 @pytest.fixture()
-def spends_client(envs, login_app_user) -> SpendsHttpClient:
-    return SpendsHttpClient(envs.gateway_url, login_app_user)
+def spends_client(envs, auth_api_token) -> SpendsHttpClient:
+    return SpendsHttpClient(envs.gateway_url, auth_api_token)
 
 
 @pytest.fixture(scope="session")
@@ -131,7 +141,7 @@ def userdata_db(envs) -> UserDataDb:
     return UserDataDb(envs.userdata_db_url)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def registration(envs, user_for_reg, user_db, userdata_db):
     cookie = requests.get(f"{envs.frontend_url}:9000/register").headers['x-xsrf-token']
     username, password = user_for_reg

@@ -1,28 +1,24 @@
 from pages.main_page import main_page
 from pages.people_page import people_page
-from marks import Pages
 from pages.login_page import login_page
 import allure
 
 
-@Pages.spending_page
 @allure.story("People")
-def test_empty_people_table(logout):
+def test_empty_people_table(login_app_user, logout):
         main_page.go_to_people()
         people_page.assert_empty_people_table('There are no other users yet!')
 
 
-@Pages.spending_page
 @allure.story("People")
-def test_user_exists_for_add_to_friends(registration, logout):
+def test_user_exists_for_add_to_friends(registration, login_app_user, logout):
         username, _ = registration
         main_page.go_to_people()
         people_page.assert_people_in_table(username)
 
 
-@Pages.spending_page
 @allure.story("People")
-def test_add_friend(registration, logout):
+def test_add_friend(registration, login_app_user, logout):
         username, _ = registration
         main_page.go_to_people()
         people_page.assert_people_in_table(username)
@@ -31,12 +27,10 @@ def test_add_friend(registration, logout):
         people_page.assert_message_in_table('Pending invitation')
 
 
-@Pages.spending_page
 @allure.story("People")
 def test_accept_friend_invitation(registration, friend_request, logout):
         username, password = registration
         friend_request(username)
-        main_page.logout()
         login_page.login(username, password)
         main_page.go_to_people()
         people_page.accept_invitation()
@@ -44,12 +38,10 @@ def test_accept_friend_invitation(registration, friend_request, logout):
         people_page.assert_message_in_table('You are friends')
 
 
-@Pages.spending_page
 @allure.story("People")
 def test_decline_friend_invitation(registration, friend_request, logout):
         username, password = registration
         friend_request(username)
-        main_page.logout()
         login_page.login(username, password)
         main_page.go_to_people()
         people_page.decline_invitation()

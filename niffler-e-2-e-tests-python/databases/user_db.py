@@ -39,5 +39,6 @@ class UserDb:
             query = select(User.id).where(User.username == username)
             user_id = session.exec(query).first()
             user = session.get(User, user_id)
-            session.delete(user)
-            session.commit()
+            if user:
+                session.delete(user)
+                session.commit()
