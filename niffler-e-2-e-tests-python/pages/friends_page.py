@@ -11,11 +11,18 @@ class FriendsPage(BasePage):
 
 
     def accept_invitation(self):
-        self.find_element('[data-tooltip-id=submit-invitation] button').click()
+        with allure.step('Accept invitation'):
+            self.find_element('[data-tooltip-id=submit-invitation] button').click()
 
 
     def decline_invitation(self):
-        self.find_element('[data-tooltip-id=decline-invitation] button').click()
+        with allure.step('Decline invitation'):
+            self.find_element('[data-tooltip-id=decline-invitation] button').click()
+
+
+    def assert_message_in_table(self, expected_text):
+        with allure.step(f'Assert message in table: {expected_text}'):
+            self.assert_text('.abstract-table__buttons div', expected_text)
 
 
 friends_page = FriendsPage()

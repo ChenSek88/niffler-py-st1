@@ -20,6 +20,7 @@ from databases.spend_db import SpendDb
 from databases.user_db import UserDb
 from databases.userdata_db import UserDataDb
 from models.config import Envs
+from http import HTTPStatus
 
 
 def allure_logger(config) -> AllureReporter:
@@ -146,10 +147,11 @@ def registration(envs, user_for_reg, user_db, userdata_db):
     cookie = requests.get(f"{envs.frontend_url}:9000/register").headers['x-xsrf-token']
     username, password = user_for_reg
     user_data = {"_csrf": cookie, "username": username, "password": password, "passwordSubmit": password}
-    requests.post(f"{envs.frontend_url}:9000/register",
+    response = requests.post(f"{envs.frontend_url}:9000/register",
         data=user_data,
         headers={'Content-Type': 'application/x-www-form-urlencoded', 'Cookie': f'XSRF-TOKEN={cookie}'}
     )
+    assert response.status_code == HTTPStatus.CREATED
     yield username, password
     userdata_db.delete_friend_request(username)
     userdata_db.delete_userdata(username)

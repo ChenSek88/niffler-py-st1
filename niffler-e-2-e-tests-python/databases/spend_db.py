@@ -33,5 +33,6 @@ class SpendDb:
     def delete_category(self, category_id: str):
         with Session(self.engine) as session:
             category = session.get(Category, category_id)
-            session.delete(category)
-            session.commit()
+            if category:
+                session.delete(category)
+                session.commit()

@@ -47,13 +47,17 @@ class MainPage(BasePage):
         self.find_element('a[href*=people]').click()
 
 
-    def add_spending(self, CATEGORY, AMOUNT, DESCRIPTION):
-        with allure.step('Add spending'):
+    def fill_spending_fields(self, CATEGORY, AMOUNT, DESCRIPTION):
+        with allure.step('Fill spending fields'):
             self.find_element('.add-spending__form .select-wrapper input').click()
             self.find_element('.add-spending__form .select-wrapper input').set_value(CATEGORY)
             self.find_element("div[id*='react-select']").should(have.text(CATEGORY)).click()
             self.find_element('.add-spending__form [name=amount]').set_value(AMOUNT)
             self.find_element('.add-spending__form [name=description]').set_value(DESCRIPTION)
+
+
+    def add_new_spending(self):
+        with allure.step('Add new spending'):
             self.find_element('.add-spending__form .button').click()
 
 
@@ -62,6 +66,11 @@ class MainPage(BasePage):
             spending_table = self.find_element('.spendings-table tbody tr')
             elements = spending_table.all('td .value-container')
             elements.should(have._texts_like(AMOUNT, CATEGORY, DESCRIPTION))
+
+
+    def assert_spending_form_error(self, expected_text):
+        with allure.step('Assert that category is required'):
+            self.find_element('.add-spending__form .form__error').should(have.text(expected_text))
 
 
     def delete_spending(self):
