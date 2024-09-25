@@ -1,72 +1,15 @@
-import os
-
-from dotenv import load_dotenv
-import allure
 import pytest
-from allure_commons.reporter import AllureReporter
-from allure_commons.types import AttachmentType
-from allure_pytest.listener import AllureListener
-from pytest import Item, FixtureDef, FixtureRequest
-from selene import browser
 from faker import Faker
 
-from clients.spends_client import SpendsHttpClient
-from clients.friends_client import FriendsHttpClient
-from clients.auth_client import AuthClient
 from pages.main_page import main_page
 from pages.login_page import login_page
 import requests
-from databases.spend_db import SpendDb
-from databases.user_db import UserDb
-from databases.userdata_db import UserDataDb
-from models.config import Envs
 from http import HTTPStatus
+from conftest import envs
+from _pytest.fixtures import FixtureRequest
 
 
-def allure_logger(config) -> AllureReporter:
-    listener: AllureListener = config.pluginmanager.get_plugin("allure_listener")
-    return listener.allure_logger
-
-
-@pytest.hookimpl(hookwrapper=True, trylast=True)
-def pytest_runtest_call(item: Item):
-    yield
-    allure.dynamic.title(" ".join(item.name.split("_")[1:]).title())
-
-
-@pytest.hookimpl(hookwrapper=True, trylast=True)
-def pytest_fixture_setup(fixturedef: FixtureDef, request: FixtureRequest):
-    yield
-    logger = allure_logger(request.config)
-    item = logger.get_last_item()
-    scope_letter = fixturedef.scope[0].upper()
-    item.name = f"[{scope_letter}] " + " ".join(fixturedef.argname.split("_")).title()
-
-
-@pytest.hookimpl(hookwrapper=True, tryfirst=True)
-def pytest_runtest_teardown(item):
-    yield
-    reporter = allure_logger(item.config)
-    test = reporter.get_test(None)
-    test.labels = [x for x in test.labels if x.name != "tag"]
-
-
-@pytest.fixture(scope="session")
-def envs() -> Envs:
-    load_dotenv()
-    envs_instance =  Envs(
-        frontend_url=os.getenv("FRONTEND_URL"),
-        gateway_url=os.getenv("GATEWAY_URL"),
-        auth_url=os.getenv("AUTH_URL"),
-        auth_secret=os.getenv("AUTH_SECRET"),
-        spend_db_url=os.getenv("SPEND_DB_URL"),
-        user_db_url=os.getenv("USER_DB_URL"),
-        userdata_db_url=os.getenv("USERDATA_DB_URL"),
-        test_username=os.getenv("TEST_USERNAME"),
-        test_password=os.getenv("TEST_PASSWORD")
-    )
-    allure.attach(envs_instance.model_dump_json(indent=2), name="envs.json", attachment_type=AttachmentType.JSON)
-    return envs_instance
+pytest_plugins = ["fixtures.auth_fixtures", "fixtures.client_fixtures", "fixtures.pages_fixtures"]
 
 
 @pytest.fixture(scope="session")
@@ -78,18 +21,6 @@ def app_user(envs):
 def login_app_user(app_user):
     username, password = app_user
     login_page.login(username, password)
-    '''id_token = None
-    while id_token is None:
-        id_token = browser.execute_script('return window.sessionStorage.getItem("id_token")')
-    allure.attach(id_token, name="token.txt", attachment_type=AttachmentType.TEXT)
-    return id_token'''
-
-
-@pytest.fixture(scope="session")
-def auth_api_token(envs: Envs):
-    token = AuthClient(envs).auth(envs.test_username, envs.test_password.get_secret_value())
-    allure.attach(token, name="token.txt", attachment_type=AttachmentType.TEXT)
-    return token
 
 
 @pytest.fixture()
@@ -115,31 +46,6 @@ def profile_data():
     name = fake.first_name()
     surname = fake.last_name()
     return name, surname
-
-
-@pytest.fixture()
-def friends_client(envs, auth_api_token) -> FriendsHttpClient:
-    return FriendsHttpClient(envs.gateway_url, auth_api_token)
-
-
-@pytest.fixture()
-def spends_client(envs, auth_api_token) -> SpendsHttpClient:
-    return SpendsHttpClient(envs.gateway_url, auth_api_token)
-
-
-@pytest.fixture(scope="session")
-def spend_db(envs) -> SpendDb:
-    return SpendDb(envs.spend_db_url)
-
-
-@pytest.fixture(scope="session")
-def user_db(envs) -> UserDb:
-    return UserDb(envs.user_db_url)
-
-
-@pytest.fixture(scope="session")
-def userdata_db(envs) -> UserDataDb:
-    return UserDataDb(envs.userdata_db_url)
 
 
 @pytest.fixture()
@@ -207,8 +113,3 @@ def remove_all_categories(request: FixtureRequest, spends_client, spend_db):
     categories = spends_client.get_categories()
     for category in categories:
         spend_db.delete_category(category.id)
-
-
-@pytest.fixture()
-def spending_page(login_app_user, envs):
-    browser.open(envs.frontend_url)

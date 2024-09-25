@@ -1,11 +1,13 @@
-pytest
-requests
+faker==26.0.0
 selene>=2.0.0rc7
-faker
-python-dotenv
-allure-pytest
-requests-toolbelt
+pytest==8.3.2
+requests==2.32.3
+python-dotenv==1.0.1
+allure-pytest==2.13.5
+requests-toolbelt==1.0.0
 
-psycopg2-binary
-sqlalchemy
-sqlmodel
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.34
+sqlmodel==0.0.22
+curlify==2.2.1
+pkce==1.0.3

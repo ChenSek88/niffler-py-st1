@@ -4,8 +4,6 @@ import allure
 
 
 @allure.story("Authorization")
-
-
 def test_login_successful(app_user, logout):
     user, password = app_user
     login_page.login(user, password)
