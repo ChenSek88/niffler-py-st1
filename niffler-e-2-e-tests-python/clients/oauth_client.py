@@ -3,7 +3,7 @@ import base64
 import pkce
 
 from models.config import Envs
-from models.oauth import OAuthRequest, LoginRequest  # , LoginRequest, TokenRequest
+from models.oauth import OAuthRequest, TokenRequest
 from utils.sessions import AuthSession
 
 
@@ -41,7 +41,8 @@ class OAuthClient:
 
         self.session.post(
             url="/login",
-            data={  # pydantic
+            data=
+            {
                 "username": username,
                 "password": password,
                 "_csrf": self.session.cookies.get("XSRF-TOKEN")
@@ -51,13 +52,11 @@ class OAuthClient:
 
         token_response = self.session.post(
             url="/oauth2/token",
-            data={ # pydantic
-                "code": self.session.code,
-                "redirect_uri": self.redirect_uri,
-                "code_verifier": self.code_verifier,
-                "grant_type": "authorization_code",
-                "client_id": "client"
-            },
+            data=TokenRequest(
+                code=self.session.code,
+                redirect_uri=self.redirect_uri,
+                code_verifier=self.code_verifier
+            ).model_dump(),
             headers=self.authorization_basic,
         )
 

@@ -10,14 +10,8 @@ class OAuthRequest(BaseModel):
     code_challenge_method: str = "S256"
 
 
-class LoginRequest(BaseModel):
-    username: str
-    password: str
-    _csrf: str
-
-
 class TokenRequest(BaseModel):
-    code: str
+    code: list
     redirect_uri: str
     code_verifier: str
     grant_type: str = "authorization_code",
