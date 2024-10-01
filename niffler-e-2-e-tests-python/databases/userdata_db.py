@@ -22,6 +22,12 @@ class UserDataDb:
         allure.attach(statement_with_params, name=name, attachment_type=AttachmentType.TEXT)
 
 
+    def get_user_profile(self, username):
+        with Session(self.engine) as session:
+            query = select(User).where(User.username == username)
+            return session.exec(query).first()
+
+
     def delete_userdata(self, username: str):
         with Session(self.engine) as session:
             query = select(User).where(User.username == username)

@@ -17,10 +17,10 @@ class SpendDb:
         event.listen(self.engine, "do_execute", fn=attach_sql)
 
 
-    def get_user_categories(self, username: str) -> Sequence[Category]:
+    def get_category(self, category: str):
         with Session(self.engine) as session:
-            statement = select(Category).where(Category.username == username)
-            return session.exec(statement).all()
+            query = select(Category).where(Category.category == category)
+            return session.exec(query).first()
 
 
     def delete_category(self, category_id: str):

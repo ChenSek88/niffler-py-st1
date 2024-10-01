@@ -21,6 +21,12 @@ class UserDb:
         allure.attach(statement_with_params, name=name, attachment_type=AttachmentType.TEXT)
 
 
+    def get_user(self, username: str):
+        with Session(self.engine) as session:
+            query = select(User).where(User.username == username)
+            return session.exec(query).first()
+
+
     def delete_user_authority(self, username: str):
         with Session(self.engine) as session:
             query = select(User.id).where(User.username == username)

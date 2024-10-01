@@ -6,9 +6,10 @@ import allure
 
 
 @allure.story("Registration")
-def test_registration_successful(user_for_reg, logout):
+def test_registration_successful(user_for_reg, user_in_db, logout):
     username, password = user_for_reg
     registration_page.user_registration(username, password)
+    assert user_in_db(username) == username
     login_page.login(username, password)
     main_page.assert_main_page_title('Niffler. The coin keeper.')
 
