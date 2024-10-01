@@ -99,7 +99,7 @@ def category_in_db(spend_db):
 
 
 @pytest.fixture()
-def name_surname_in_db(userdata_db):
+def firstname_surname_in_db(userdata_db):
     def get_firstname_surname_from_db(username):
         user_profile = userdata_db.get_user_profile(username)
         return user_profile.firstname, user_profile.surname

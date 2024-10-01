@@ -24,11 +24,11 @@ def test_add_existing_category(category, login_app_user, logout):
 
 
 @allure.story("Profile")
-def test_update_profile_settings(login_app_user, app_user, profile_data, name_surname_in_db, logout):
+def test_update_profile_settings(login_app_user, app_user, profile_data, firstname_surname_in_db, logout):
     username, _ = app_user
     name, surname = profile_data
     main_page.go_to_profile()
     profile_page.update_profile(name, surname)
     main_page.assert_alert_message_and_close('Profile successfully updated')
     profile_page.assert_changes(name, surname)
-    assert name_surname_in_db(username) == (name, surname)
+    assert firstname_surname_in_db(username) == (name, surname)
