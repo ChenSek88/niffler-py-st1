@@ -24,11 +24,11 @@ class SpendsHttpClient:
         return [Category.model_validate(item) for item in response.json()]
 
 
-    def add_category(self, name: str) -> Category:
+    def add_category(self, name: str):
         response = self.session.post("/api/categories/add", json={
             "category": name
         })
-        return Category.model_validate(response.json())
+        return response
 
 
     def get_spends(self) -> list[Spend]:

@@ -110,8 +110,8 @@ def firstname_surname_in_db(userdata_db):
 def category(request: FixtureRequest, spends_client, spend_db):
     category_name = request.param
     category = spends_client.add_category(category_name)
-    yield category.category
-    spend_db.delete_category(category.id)
+    yield category.json()['category']
+    spend_db.delete_category(category.json()['id'])
 
 
 @pytest.fixture(params=[])
