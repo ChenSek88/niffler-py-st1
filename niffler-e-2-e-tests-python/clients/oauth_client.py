@@ -23,7 +23,6 @@ class OAuthClient:
         self.authorization_basic = {"Authorization": f"Basic {self._basic_token}"}
         self.token = None
 
-
     def get_token(self, username, password):
         """Возвращает token oauth для авторизации пользователя с username и password
         1. Получаем jsessionid и xsrf-token куку в сессию.

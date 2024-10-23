@@ -1,4 +1,4 @@
-from pydantic import BaseModel, SecretStr
+from pydantic import BaseModel
 
 
 class OAuthRequest(BaseModel):

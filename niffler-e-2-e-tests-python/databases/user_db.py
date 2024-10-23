@@ -20,12 +20,10 @@ class UserDb:
         name = statement.split(" ")[0] + " " + context.engine.url.database
         allure.attach(statement_with_params, name=name, attachment_type=AttachmentType.TEXT)
 
-
     def get_user(self, username: str):
         with Session(self.engine) as session:
             query = select(User).where(User.username == username)
             return session.exec(query).first()
-
 
     def delete_user_authority(self, username: str):
         with Session(self.engine) as session:
@@ -38,7 +36,6 @@ class UserDb:
                 user_authority = session.get(Authority, authority)
                 session.delete(user_authority)
             session.commit()
-
 
     def delete_user(self, username: str):
         with Session(self.engine) as session:

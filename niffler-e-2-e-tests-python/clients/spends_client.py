@@ -1,7 +1,7 @@
 import requests
 
 from models.config import Envs
-from models.spend import Spend, SpendAdd
+from models.spend import SpendAdd
 from models.category import Category
 from utils.sessions import BaseSession
 
@@ -18,28 +18,21 @@ class SpendsHttpClient:
             'Content-Type': 'application/json'
         })
 
-
     def get_categories(self) -> list[Category]:
-        response = self.session.get("/api/categories/all")
-        return [Category.model_validate(item) for item in response.json()]
-
+        return self.session.get("/api/categories/all")
 
     def add_category(self, name: str):
-        response = self.session.post("/api/categories/add", json={
+        category = self.session.post("/api/categories/add", json={
             "category": name
         })
-        return response
+        return category
+
+    def get_spends(self) -> list:
+        return self.session.get("/api/spends/all")
 
 
-    def get_spends(self) -> list[Spend]:
-        response = self.session.get("/api/spends/all")
-        return [Spend.model_validate(item) for item in response.json()]
-
-
-    def add_spends(self, spend: SpendAdd) -> Spend:
-        response = self.session.post("/api/spends/add", json=spend.model_dump())
-        return Spend.model_validate(response.json())
-
+    def add_spends(self, spend: SpendAdd):
+        return self.session.post("/api/spends/add", json=spend.model_dump())
 
     def remove_spends(self, ids: list[str]):
-        self.session.delete("/api/spends/remove", params={"ids": ids})
+        return self.session.delete("/api/spends/remove", params={"ids": ids})

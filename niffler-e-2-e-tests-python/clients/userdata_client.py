@@ -1,9 +1,10 @@
 import requests
+
 from models.config import Envs
 from utils.sessions import BaseSession
 
 
-class FriendsHttpClient:
+class UserdataHttpClient:
     session: requests.Session
     base_url: str
 
@@ -15,8 +16,10 @@ class FriendsHttpClient:
             'Content-Type': 'application/json'
         })
 
-    def friend_request(self, username: str):
-        response = self.session.post("/api/invitations/send", json={
-            "username": username
+    def update_userdata(self, currency: str, firstname: str, surname: str):
+        userdata = self.session.post("/api/users/update", json={
+            "currency": currency,
+            "firstname": firstname,
+            "surname": surname
         })
-        return response.json()
+        return userdata

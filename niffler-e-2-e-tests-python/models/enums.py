@@ -11,4 +11,4 @@ class Category:
     SUPERMARKET = "BILLA"
     TELECOM = "MTS"
     BANK = "SBERBANK"
-    BAD_CATEGORY = "a"
+    OVER_LIMITS = "OVER LIMITS"

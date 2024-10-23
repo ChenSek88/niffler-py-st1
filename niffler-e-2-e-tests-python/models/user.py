@@ -2,6 +2,7 @@ from sqlmodel import SQLModel, Field, MetaData
 
 metadata = MetaData()
 
+
 class User(SQLModel, table=True):
     metadata = metadata
     id: str = Field(default=None, primary_key=True)

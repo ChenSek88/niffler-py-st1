@@ -8,10 +8,8 @@ class BasePage:
         browser.driver.maximize_window()
         browser.open(url)
 
-
     def find_element(self, selector):
         return s(selector)
-
 
     def assert_text(self, selector, expected_text):
         self.find_element(selector).should(have.text(expected_text))

@@ -33,11 +33,11 @@ def test_add_spending(category, login_app_user, remove_all_spends, logout):
 @TestData.category(Category.SCHOOL)
 @TestData.spends(
     SpendAdd(
-    amount=AMOUNT,
-    description=DESCRIPTION,
-    category=Category.SCHOOL,
-    spendDate="2024-08-08T18:39:27.955Z",
-    currency="RUB"
+        amount=AMOUNT,
+        description=DESCRIPTION,
+        category=Category.SCHOOL,
+        spendDate="2024-08-08T18:39:27.955Z",
+        currency="RUB"
     )
 )
 @allure.story("Spending")

@@ -12,7 +12,6 @@ class LoginPage(BasePage):
             self.find_element('[name=password]').set_value(password)
             self.find_element('[type=submit]').click()
 
-
     def assert_bad_login(self, expected_text):
         with allure.step(f'Assert bad login: {expected_text}'):
             self.assert_text('[action*=login] .form__error', expected_text)

@@ -13,7 +13,6 @@ class RegistrationPage(BasePage):
             self.find_element('#passwordSubmit').set_value(password)
             self.find_element('[type="submit"]').click()
 
-
     def registration_with_diff_passwords(self, username, password):
         with allure.step(f'Registration with username: {username} with different passwords'):
             self.open_url('http://frontend.niffler.dc')
@@ -22,8 +21,6 @@ class RegistrationPage(BasePage):
             self.find_element('#password').set_value(password)
             self.find_element('#passwordSubmit').set_value('bad' + password)
             self.find_element('[type="submit"]').click()
-
-
 
     def assert_bad_registration(self, expected_text):
         with allure.step(f'Assert bad registration: {expected_text}'):
