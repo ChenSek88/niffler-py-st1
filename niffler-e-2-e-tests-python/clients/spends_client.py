@@ -30,7 +30,6 @@ class SpendsHttpClient:
     def get_spends(self) -> list:
         return self.session.get("/api/spends/all")
 
-
     def add_spends(self, spend: SpendAdd):
         return self.session.post("/api/spends/add", json=spend.model_dump())
 
