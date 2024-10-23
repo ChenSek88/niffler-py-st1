@@ -4,8 +4,7 @@ from marks import TestData
 from fixtures.client_fixtures import spends_client
 
 from models.enums import Category, Spend
-from models.spend import SpendAdd
-
+from models.spend import SpendAdd, Spend as SpendResponse
 from http import HTTPStatus
 
 
@@ -18,7 +17,20 @@ def test_add_spending(category, spends_client, remove_all_spends):
     with allure.step('Assert status code 201'):
         assert spends.status_code == HTTPStatus.CREATED
     with allure.step('Validate spend model'):
-        SpendAdd.model_validate(spends.json())
+        SpendResponse.model_validate(spends.json())
+
+
+@TestData.category(Category.SCHOOL)
+@TestData.spends(Spend.TEST_DATA)
+@allure.epic("API")
+@allure.story("Spending")
+def test_get_spending(category, spends, spends_client, remove_all_spends):
+    with allure.step('Get spending'):
+        spend = spends_client.get_spends()
+    with allure.step('Assert status code 200'):
+        assert spend.status_code == HTTPStatus.OK
+    with allure.step('Validate spend model'):
+        [SpendResponse.model_validate(item) for item in spend.json()]
 
 
 @TestData.category(Category.SCHOOL)
