@@ -8,8 +8,6 @@ from models.category import Category
 from models.userdata import User as UserData
 from http import HTTPStatus
 
-CATEGORY = 'OVER LIMITS'
-
 
 @allure.epic("API")
 @allure.story("Profile")
@@ -28,7 +26,7 @@ def test_add_new_category(spends_client, category_in_db, remove_all_categories):
 @TestData.category(EnumsCategory.SCHOOL)
 @allure.story("Profile")
 def test_add_existing_category(category, spends_client):
-    with allure.step('Create category exists'):
+    with allure.step('Create existing category'):
         category = spends_client.add_category(EnumsCategory.SCHOOL)
     with allure.step('Assert status code 500'):
         assert category.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
@@ -39,7 +37,7 @@ def test_add_existing_category(category, spends_client):
 def test_create_category_over_limits(app_user, add_max_count_categories, spends_client, remove_all_categories):
     username, _ = app_user
     with allure.step('Create category over limits'):
-        category = spends_client.add_category(CATEGORY)
+        category = spends_client.add_category(EnumsCategory.OVER_LIMITS)
     with allure.step('Assert status code 406'):
         assert category.status_code == HTTPStatus.NOT_ACCEPTABLE
     with allure.step('Assert details about over limits'):
@@ -65,10 +63,12 @@ def test_update_firstname_surname(app_user, userdata_client, profile_data, first
 @TestData.category(EnumsCategory.SCHOOL)
 @allure.story("Profile")
 def test_get_category(category, spends_client):
-    with allure.step('Get one category'):
+    with allure.step('Get category'):
         category = spends_client.get_categories()
     with allure.step('Assert status_code 200'):
         assert category.status_code == HTTPStatus.OK
+    with allure.step('Assert category name'):
+        assert [item['category'] for item in category.json()] == [EnumsCategory.SCHOOL]
     with allure.step('Validate category model'):
         [Category.model_validate(item) for item in category.json()]
 
@@ -77,8 +77,10 @@ def test_get_category(category, spends_client):
 @allure.story("Profile")
 def test_get_categories(add_max_count_categories, spends_client, remove_all_categories):
     with allure.step('Get categories'):
-        category = spends_client.get_categories()
+        categories = spends_client.get_categories()
     with allure.step('Assert status_code 200'):
-        assert category.status_code == HTTPStatus.OK
+        assert categories.status_code == HTTPStatus.OK
+    with allure.step('Assert all categories'):
+        assert len(categories.json()) == 8
     with allure.step('Validate category model'):
-        [Category.model_validate(item) for item in category.json()]
+        [Category.model_validate(item) for item in categories.json()]

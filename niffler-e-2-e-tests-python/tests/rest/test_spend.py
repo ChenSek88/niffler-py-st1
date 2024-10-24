@@ -43,3 +43,6 @@ def test_remove_spending(category, spends, spends_client):
         removed_spend = spends_client.remove_spends(spend[0]['id'])
     with allure.step('Assert status code 200'):
         assert removed_spend.status_code == HTTPStatus.OK
+    with allure.step('Assert empty list of spendings'):
+        spends = spends_client.get_spends()
+        assert spends.json() == []
