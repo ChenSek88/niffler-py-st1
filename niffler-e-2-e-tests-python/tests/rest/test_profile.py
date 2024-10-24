@@ -23,8 +23,8 @@ def test_add_new_category(spends_client, category_in_db, remove_all_categories):
 
 
 @allure.epic("API")
-@TestData.category(EnumsCategory.SCHOOL)
 @allure.story("Profile")
+@TestData.category(EnumsCategory.SCHOOL)
 def test_add_existing_category(category, spends_client):
     with allure.step('Create existing category'):
         category = spends_client.add_category(EnumsCategory.SCHOOL)
@@ -60,8 +60,8 @@ def test_update_firstname_surname(app_user, userdata_client, profile_data, first
 
 
 @allure.epic("API")
-@TestData.category(EnumsCategory.SCHOOL)
 @allure.story("Profile")
+@TestData.category(EnumsCategory.SCHOOL)
 def test_get_category(category, spends_client):
     with allure.step('Get category'):
         category = spends_client.get_categories()

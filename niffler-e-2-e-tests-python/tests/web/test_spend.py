@@ -16,8 +16,8 @@ def test_add_spending_without_category(login_app_user, logout):
     main_page.assert_spending_form_error('Category is required')
 
 
-@TestData.category(Category.SCHOOL)
 @allure.story("Spending")
+@TestData.category(Category.SCHOOL)
 def test_add_spending(category, login_app_user, remove_all_spends, logout):
     main_page.fill_spending_fields(Category.SCHOOL, Spend.AMOUNT, Spend.DESCRIPTION)
     main_page.add_new_spending()
@@ -25,9 +25,9 @@ def test_add_spending(category, login_app_user, remove_all_spends, logout):
     main_page.spending_added(Spend.AMOUNT, Category.SCHOOL, Spend.DESCRIPTION)
 
 
+@allure.story("Spending")
 @TestData.category(Category.SCHOOL)
 @TestData.spends(Spend.TEST_DATA)
-@allure.story("Spending")
 def test_delete_spending(category, spends, login_app_user, logout):
     main_page.spending_added(Spend.AMOUNT, Category.SCHOOL, Spend.DESCRIPTION)
     main_page.delete_spending()

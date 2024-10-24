@@ -8,9 +8,9 @@ from models.spend import SpendAdd, Spend as SpendResponse
 from http import HTTPStatus
 
 
-@TestData.category(Category.SCHOOL)
 @allure.epic("API")
 @allure.story("Spending")
+@TestData.category(Category.SCHOOL)
 def test_add_spending(category, spends_client, remove_all_spends):
     with allure.step('Add spending'):
         spends = spends_client.add_spends(Spend.TEST_DATA)
@@ -20,10 +20,10 @@ def test_add_spending(category, spends_client, remove_all_spends):
         SpendResponse.model_validate(spends.json())
 
 
-@TestData.category(Category.SCHOOL)
-@TestData.spends(Spend.TEST_DATA)
 @allure.epic("API")
 @allure.story("Spending")
+@TestData.category(Category.SCHOOL)
+@TestData.spends(Spend.TEST_DATA)
 def test_get_spending(category, spends, spends_client, remove_all_spends):
     with allure.step('Get spending'):
         spend = spends_client.get_spends()
@@ -33,10 +33,10 @@ def test_get_spending(category, spends, spends_client, remove_all_spends):
         [SpendResponse.model_validate(item) for item in spend.json()]
 
 
-@TestData.category(Category.SCHOOL)
-@TestData.spends(Spend.TEST_DATA)
 @allure.epic("API")
 @allure.story("Spending")
+@TestData.category(Category.SCHOOL)
+@TestData.spends(Spend.TEST_DATA)
 def test_remove_spending(category, spends, spends_client):
     spend = spends_client.get_spends().json()
     with allure.step('Remove spending'):

@@ -15,8 +15,8 @@ def test_add_new_category(login_app_user, category_in_db, remove_all_categories,
     assert category_in_db(Category.SCHOOL) == Category.SCHOOL
 
 
-@TestData.category(Category.SCHOOL)
 @allure.story("Profile")
+@TestData.category(Category.SCHOOL)
 def test_add_existing_category(category, login_app_user, logout):
     main_page.go_to_profile()
     profile_page.add_category(Category.SCHOOL)
