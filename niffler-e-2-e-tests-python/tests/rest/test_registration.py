@@ -6,7 +6,7 @@ import requests
 
 @allure.epic("API")
 @allure.story("Registration")
-def test_successful_registration(envs, user_for_reg, user_in_db):
+def test_successful_registration(envs, user_for_reg, is_user_in_db):
     cookie = requests.get(f"{envs.frontend_url}:9000/register").headers['x-xsrf-token']
     username, password = user_for_reg
     user_data = {"_csrf": cookie, "username": username, "password": password, "passwordSubmit": password}
@@ -18,12 +18,12 @@ def test_successful_registration(envs, user_for_reg, user_in_db):
     with allure.step('Assert status code 201'):
         assert response.status_code == HTTPStatus.CREATED
     with allure.step('Assert username in db'):
-        assert user_in_db(username) == username
+        assert is_user_in_db(username) == username
 
 
 @allure.epic("API")
 @allure.story("Registration")
-def test_bad_registration(envs, app_user, user_in_db):
+def test_bad_registration(envs, app_user):
     cookie = requests.get(f"{envs.frontend_url}:9000/register").headers['x-xsrf-token']
     username, password = app_user
     user_data = {"_csrf": cookie, "username": username, "password": password, "passwordSubmit": password}

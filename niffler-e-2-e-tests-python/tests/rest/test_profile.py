@@ -11,7 +11,7 @@ from http import HTTPStatus
 
 @allure.epic("API")
 @allure.story("Profile")
-def test_add_new_category(spends_client, category_in_db, remove_all_categories):
+def test_add_new_category(spends_client, is_category_in_db, remove_all_categories):
     with allure.step('Create category'):
         category = spends_client.add_category(EnumsCategory.SCHOOL)
     with allure.step('Assert status_code 200'):
@@ -19,7 +19,7 @@ def test_add_new_category(spends_client, category_in_db, remove_all_categories):
     with allure.step('Validate category model'):
         Category.model_validate(category.json())
     with allure.step('Assert category in database'):
-        assert category_in_db(EnumsCategory.SCHOOL) == EnumsCategory.SCHOOL
+        assert is_category_in_db(EnumsCategory.SCHOOL) == EnumsCategory.SCHOOL
 
 
 @allure.epic("API")
@@ -46,7 +46,7 @@ def test_create_category_over_limits(app_user, add_max_count_categories, spends_
 
 @allure.epic("API")
 @allure.story("Profile")
-def test_update_firstname_surname(app_user, userdata_client, profile_data, firstname_surname_in_db):
+def test_update_firstname_surname(app_user, userdata_client, profile_data, is_firstname_surname_in_db):
     username, _ = app_user
     firstname, surname = profile_data
     with allure.step('Update firstname and surname'):
@@ -56,7 +56,7 @@ def test_update_firstname_surname(app_user, userdata_client, profile_data, first
     with allure.step('Validate userdata model'):
         UserData.model_validate(userdata.json())
     with allure.step('Assert firstname and surname in db'):
-        assert firstname_surname_in_db(username) == (firstname, surname)
+        assert is_firstname_surname_in_db(username) == (firstname, surname)
 
 
 @allure.epic("API")
