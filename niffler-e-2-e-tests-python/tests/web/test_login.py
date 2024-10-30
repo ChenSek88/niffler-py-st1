@@ -4,7 +4,7 @@ import allure
 
 
 @allure.story("Authorization")
-def test_login_successful(app_user, logout):
+def test_login_successful(app_user):
     user, password = app_user
     login_page.login(user, password)
     main_page.assert_main_page_title('Niffler. The coin keeper.')

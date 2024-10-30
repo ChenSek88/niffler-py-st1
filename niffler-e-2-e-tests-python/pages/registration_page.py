@@ -6,7 +6,6 @@ class RegistrationPage(BasePage):
 
     def user_registration(self, username, password):
         with allure.step(f'Registration with username: {username}'):
-            self.open_url('http://frontend.niffler.dc')
             self.find_element('a[href*=register]').click()
             self.find_element('#username').set_value(username)
             self.find_element('#password').set_value(password)
@@ -15,7 +14,6 @@ class RegistrationPage(BasePage):
 
     def registration_with_diff_passwords(self, username, password):
         with allure.step(f'Registration with username: {username} with different passwords'):
-            self.open_url('http://frontend.niffler.dc')
             self.find_element('a[href*=register]').click()
             self.find_element('#username').set_value(username)
             self.find_element('#password').set_value(password)
@@ -27,4 +25,4 @@ class RegistrationPage(BasePage):
             self.assert_text('#register-form .form__error', expected_text)
 
 
-registration_page=RegistrationPage()
+registration_page = RegistrationPage()

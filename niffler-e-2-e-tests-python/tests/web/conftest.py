@@ -5,8 +5,19 @@ from pages.login_page import login_page
 import requests
 from http import HTTPStatus
 from conftest import envs
+from selene.support.shared import browser as shared_browser
+
 
 pytest_plugins = ["fixtures.auth_fixtures", "fixtures.client_fixtures", "fixtures.database_fixtures", "fixtures.generate_data_fixtures"]
+
+
+@pytest.fixture(scope='function', autouse=True)
+def browser_setup(envs):
+    shared_browser.config.browser_name = 'chrome'
+    shared_browser.open(envs.frontend_url)
+    shared_browser.driver.maximize_window()
+    yield
+    shared_browser.quit()
 
 
 @pytest.fixture(scope="session")

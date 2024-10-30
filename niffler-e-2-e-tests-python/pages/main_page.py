@@ -10,10 +10,9 @@ class MainPage(BasePage):
         with allure.step('Logout'):
             self.find_element('.header__logout button').click()
 
-    def assert_alert_message_and_close(self, expected_text):
-        with allure.step(f'Assert allert message: {expected_text} and close it'):
+    def assert_alert_message(self, expected_text):
+        with allure.step(f'Assert allert message: {expected_text}'):
             self.assert_text('.Toastify__toast-icon ~ div', expected_text)
-            self.find_element('.Toastify__close-button svg').click()
 
     def assert_main_page_title(self, expected_text):
         with allure.step('Assert main page title'):
@@ -73,4 +72,4 @@ class MainPage(BasePage):
             self.find_element('.spendings__content').should(have.text(expected_text))
 
 
-main_page=MainPage()
+main_page = MainPage()

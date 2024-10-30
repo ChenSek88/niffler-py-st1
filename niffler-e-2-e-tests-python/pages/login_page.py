@@ -6,7 +6,6 @@ class LoginPage(BasePage):
 
     def login(self, username, password):
         with allure.step(f'Login with username: {username}'):
-            self.open_url('http://frontend.niffler.dc')
             self.find_element('a[href*=redirect]').click()
             self.find_element('[name=username]').set_value(username)
             self.find_element('[name=password]').set_value(password)

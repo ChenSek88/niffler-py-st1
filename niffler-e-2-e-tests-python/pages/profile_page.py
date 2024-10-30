@@ -32,4 +32,4 @@ class ProfilePage(BasePage):
             self.find_element('input[name=surname]').should(have.value(surname))
 
 
-profile_page=ProfilePage()
+profile_page = ProfilePage()

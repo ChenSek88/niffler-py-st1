@@ -5,7 +5,7 @@ import allure
 
 
 @allure.story("Registration")
-def test_registration_successful(user_for_reg, is_user_in_db, logout):
+def test_registration_successful(user_for_reg, is_user_in_db):
     username, password = user_for_reg
     registration_page.user_registration(username, password)
     assert is_user_in_db(username) == username
