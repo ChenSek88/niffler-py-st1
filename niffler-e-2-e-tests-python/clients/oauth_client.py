@@ -19,7 +19,7 @@ class OAuthClient:
         self.redirect_uri = env.frontend_url + "/authorized"
 
         self.code_verifier, self.code_challenge = pkce.generate_pkce_pair()
-        self._basic_token = base64.b64encode(env.auth_secret.encode('utf-8')).decode('utf-8')
+        self._basic_token = base64.b64encode(env.auth_secret.get_secret_value().encode('utf-8')).decode('utf-8')
         self.authorization_basic = {"Authorization": f"Basic {self._basic_token}"}
         self.token = None
 

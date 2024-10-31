@@ -42,3 +42,13 @@ def is_firstname_surname_in_db(userdata_db):
         user_profile = userdata_db.get_user_profile(username)
         return user_profile.firstname, user_profile.surname
     return get_firstname_surname_from_db
+
+
+@pytest.fixture()
+def delete_user(user_db, userdata_db, is_user_in_db):
+    def delete(username):
+        if is_user_in_db(username) == username:
+            userdata_db.delete_userdata(username)
+            user_db.delete_user_authority(username)
+            user_db.delete_user(username)
+    return delete

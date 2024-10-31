@@ -6,6 +6,7 @@ from pages.main_page import main_page
 from pages.profile_page import profile_page
 
 
+@allure.epic("WEB")
 @allure.story("Profile")
 def test_add_new_category(login_app_user, is_category_in_db, remove_all_categories):
     main_page.go_to_profile()
@@ -15,6 +16,7 @@ def test_add_new_category(login_app_user, is_category_in_db, remove_all_categori
     assert is_category_in_db(Category.SCHOOL) == Category.SCHOOL
 
 
+@allure.epic("WEB")
 @allure.story("Profile")
 @TestData.category(Category.SCHOOL)
 def test_add_existing_category(category, login_app_user):
@@ -23,6 +25,7 @@ def test_add_existing_category(category, login_app_user):
     main_page.assert_alert_message('Can not add new category')
 
 
+@allure.epic("WEB")
 @allure.story("Profile")
 def test_create_category_over_limits(login_app_user, add_max_count_categories, remove_all_categories):
     main_page.go_to_profile()
@@ -30,6 +33,7 @@ def test_create_category_over_limits(login_app_user, add_max_count_categories, r
     main_page.assert_alert_message('Can not add new category')
 
 
+@allure.epic("WEB")
 @allure.story("Profile")
 def test_update_profile_settings(login_app_user, app_user, profile_data, is_firstname_surname_in_db):
     username, _ = app_user

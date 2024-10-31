@@ -6,7 +6,7 @@ import requests
 
 @allure.epic("API")
 @allure.story("Registration")
-def test_successful_registration(envs, user_for_reg, is_user_in_db):
+def test_successful_registration(envs, user_for_reg, is_user_in_db, delete_user):
     cookie = requests.get(f"{envs.frontend_url}:9000/register").headers['x-xsrf-token']
     username, password = user_for_reg
     user_data = {"_csrf": cookie, "username": username, "password": password, "passwordSubmit": password}
@@ -19,6 +19,7 @@ def test_successful_registration(envs, user_for_reg, is_user_in_db):
         assert response.status_code == HTTPStatus.CREATED
     with allure.step('Assert username in db'):
         assert is_user_in_db(username) == username
+    delete_user(username)
 
 
 @allure.epic("API")

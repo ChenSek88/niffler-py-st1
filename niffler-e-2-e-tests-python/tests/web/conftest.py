@@ -59,13 +59,3 @@ def friend_request(friends_client, userdata_db):
     def add_friend(username):
         friends_client.friend_request(username)
     yield add_friend
-
-
-@pytest.fixture()
-def delete_user(user_db, userdata_db):
-    def delete(username):
-        userdata_db.delete_friend_request(username)
-        userdata_db.delete_userdata(username)
-        user_db.delete_user_authority(username)
-        user_db.delete_user(username)
-    return delete

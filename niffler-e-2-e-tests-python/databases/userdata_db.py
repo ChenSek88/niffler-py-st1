@@ -7,7 +7,6 @@ from models.userdata import User, Friendship
 
 
 class UserDataDb:
-
     engine: Engine
 
     def __init__(self, db_url: str):

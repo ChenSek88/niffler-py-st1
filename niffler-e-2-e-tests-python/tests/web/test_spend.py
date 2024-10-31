@@ -5,17 +5,20 @@ from marks import TestData
 from models.enums import Category, Spend
 
 
+@allure.epic("WEB")
 @allure.story("Spending")
 def test_spending_title_exists(login_app_user):
     main_page.assert_spending_section_title('History of spendings')
 
 
+@allure.epic("WEB")
 @allure.story("Spending")
 def test_add_spending_without_category(login_app_user):
     main_page.add_new_spending()
     main_page.assert_spending_form_error('Category is required')
 
 
+@allure.epic("WEB")
 @allure.story("Spending")
 @TestData.category(Category.SCHOOL)
 def test_add_spending(category, login_app_user, remove_all_spends):
@@ -25,6 +28,7 @@ def test_add_spending(category, login_app_user, remove_all_spends):
     main_page.spending_added(Spend.AMOUNT, Category.SCHOOL, Spend.DESCRIPTION)
 
 
+@allure.epic("WEB")
 @allure.story("Spending")
 @TestData.category(Category.SCHOOL)
 @TestData.spends(Spend.TEST_DATA)

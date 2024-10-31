@@ -4,15 +4,18 @@ from pages.main_page import main_page
 import allure
 
 
+@allure.epic("WEB")
 @allure.story("Registration")
-def test_registration_successful(user_for_reg, is_user_in_db):
+def test_registration_successful(user_for_reg, is_user_in_db, delete_user):
     username, password = user_for_reg
     registration_page.user_registration(username, password)
     assert is_user_in_db(username) == username
     login_page.login(username, password)
     main_page.assert_main_page_title('Niffler. The coin keeper.')
+    delete_user(username)
 
 
+@allure.epic("WEB")
 @allure.story("Registration")
 def test_registration_with_diff_passwords(user_for_reg):
     username, password = user_for_reg
@@ -20,6 +23,7 @@ def test_registration_with_diff_passwords(user_for_reg):
     registration_page.assert_bad_registration('Passwords should be equal')
 
 
+@allure.epic("WEB")
 @allure.story("Registration")
 def test_registration_an_existing_user(app_user):
     username, password = app_user

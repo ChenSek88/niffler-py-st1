@@ -4,12 +4,14 @@ from pages.friends_page import friends_page
 import allure
 
 
+@allure.epic("WEB")
 @allure.story("Friends")
 def test_empty_friends_table(login_app_user):
     main_page.go_to_friends()
     friends_page.assert_empty_friends_table('There are no friends yet!')
 
 
+@allure.epic("WEB")
 @allure.story("Friends")
 def test_accept_friend_invitation(registration, friend_request):
     username, password = registration
@@ -21,6 +23,7 @@ def test_accept_friend_invitation(registration, friend_request):
     friends_page.assert_message_in_table('You are friends')
 
 
+@allure.epic("WEB")
 @allure.story("Friends")
 def test_decline_friend_invitation(registration, friend_request):
     username, password = registration

@@ -9,10 +9,6 @@ def user_for_reg(user_db, userdata_db, is_user_in_db):
     username = fake.first_name()
     password = fake.password(length=10)
     yield username, password
-    if is_user_in_db(username) == username:
-        userdata_db.delete_userdata(username)
-        user_db.delete_user_authority(username)
-        user_db.delete_user(username)
 
 
 @pytest.fixture()

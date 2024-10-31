@@ -7,7 +7,6 @@ from models.user import User, Authority
 
 
 class UserDb:
-
     engine: Engine
 
     def __init__(self, db_url: str):
