@@ -5,7 +5,7 @@ fake = Faker()
 
 
 @pytest.fixture()
-def user_for_reg(user_db, userdata_db, is_user_in_db):
+def user_for_reg():
     username = fake.first_name()
     password = fake.password(length=10)
     yield username, password

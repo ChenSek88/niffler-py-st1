@@ -32,12 +32,6 @@ def login_app_user(app_user):
 
 
 @pytest.fixture()
-def logout():
-    yield
-    main_page.logout()
-
-
-@pytest.fixture()
 def registration(envs, user_for_reg, user_db, userdata_db):
     cookie = requests.get(f"{envs.frontend_url}:9000/register").headers['x-xsrf-token']
     username, password = user_for_reg
