@@ -8,7 +8,7 @@ fake = Faker()
 def user_for_reg():
     username = fake.first_name()
     password = fake.password(length=10)
-    yield username, password
+    return username, password
 
 
 @pytest.fixture()
