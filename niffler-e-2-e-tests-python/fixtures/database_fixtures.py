@@ -45,10 +45,16 @@ def is_firstname_surname_in_db(userdata_db):
 
 
 @pytest.fixture()
-def delete_user(user_db, userdata_db, is_user_in_db):
-    def delete(username):
-        if is_user_in_db(username) == username:
-            userdata_db.delete_userdata(username)
-            user_db.delete_user_authority(username)
-            user_db.delete_user(username)
-    return delete
+def delete_user(user_db, userdata_db, is_user_in_db, request):
+    username = None
+
+    def set_username(user):
+        nonlocal username
+        username = user
+
+    request.param = set_username
+    yield set_username
+    if username and is_user_in_db(username) == username:
+        userdata_db.delete_userdata(username)
+        user_db.delete_user_authority(username)
+        user_db.delete_user(username)
