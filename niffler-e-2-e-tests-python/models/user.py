@@ -1,3 +1,4 @@
+from pydantic import BaseModel, SecretStr
 from sqlmodel import SQLModel, Field, MetaData
 
 metadata = MetaData()

@@ -21,40 +21,9 @@ def userdata_db(envs) -> UserDataDb:
 
 
 @pytest.fixture()
-def is_user_in_db(user_db):
-    def get_username_from_db(username: str):
-        user = user_db.get_user(username)
-        return user.username if user else print(f'Username: {username} not found')
-    return get_username_from_db
-
-
-@pytest.fixture()
-def is_category_in_db(spend_db):
-    def get_category_from_db(category_name):
-        category = spend_db.get_category(category_name)
-        return category.category if category else print(f'Category: {category_name} not found')
-    return get_category_from_db
-
-
-@pytest.fixture()
-def is_firstname_surname_in_db(userdata_db):
-    def get_firstname_surname_from_db(username):
-        user_profile = userdata_db.get_user_profile(username)
-        return user_profile.firstname, user_profile.surname
-    return get_firstname_surname_from_db
-
-
-@pytest.fixture()
-def delete_user(user_db, userdata_db, is_user_in_db, request):
-    username = None
-
-    def set_username(user):
-        nonlocal username
-        username = user
-
-    request.param = set_username
-    yield set_username
-    if username and is_user_in_db(username) == username:
-        userdata_db.delete_userdata(username)
-        user_db.delete_user_authority(username)
-        user_db.delete_user(username)
+def delete_user(user_db, userdata_db, request):
+    yield delete_user
+    if hasattr(delete_user, 'username'):
+        userdata_db.delete_userdata(delete_user.username)
+        user_db.delete_user_authority(delete_user.username)
+        user_db.delete_user(delete_user.username)

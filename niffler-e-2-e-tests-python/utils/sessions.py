@@ -1,9 +1,7 @@
 from urllib.parse import parse_qs, urlparse
-
-import requests
 from requests import Session
-
 from utils.allure_helpers import allure_attach_request
+import requests
 
 
 def raise_for_status(function):
@@ -11,10 +9,9 @@ def raise_for_status(function):
         response = function(*args, **kwargs)
         try:
             response.raise_for_status()
-        except requests.HTTPError as e:
+        except requests.HTTPError:
             if response.status_code == 400:
-                e.add_note(response.text)
-                raise
+                print(f"Warning: Bad request")
         return response
     return wrapper
 

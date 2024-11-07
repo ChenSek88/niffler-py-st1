@@ -18,6 +18,14 @@ class SpendDb:
             query = select(Category).where(Category.category == category)
             return session.exec(query).first()
 
+    def is_category_in_db(self, category: str):
+        category_from_db = self.get_category(category)
+        if category_from_db.category == category:
+            return True
+        else:
+            print(f'Category: {category} not found')
+            return False
+
     def delete_category(self, category_id: str):
         with Session(self.engine) as session:
             category = session.get(Category, category_id)

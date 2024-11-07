@@ -1,8 +1,6 @@
 import pytest
 
-from pages.main_page import main_page
 from pages.login_page import login_page
-import requests
 from http import HTTPStatus
 from conftest import envs
 from selene.support.shared import browser as shared_browser
@@ -32,17 +30,12 @@ def login_app_user(app_user):
 
 
 @pytest.fixture()
-def registration(envs, user_for_reg, user_db, userdata_db):
-    cookie = requests.get(f"{envs.frontend_url}:9000/register").headers['x-xsrf-token']
+def registration(envs, user_for_reg, user_db, userdata_db, registration_client):
     username, password = user_for_reg
-    user_data = {"_csrf": cookie, "username": username, "password": password, "passwordSubmit": password}
-    response = requests.post(f"{envs.frontend_url}:9000/register",
-        data=user_data,
-        headers={'Content-Type': 'application/x-www-form-urlencoded', 'Cookie': f'XSRF-TOKEN={cookie}'}
-    )
+    response = registration_client.register_user(username, password)
     assert response.status_code == HTTPStatus.CREATED
     yield username, password
-    userdata_db.delete_friend_request(username)
+    userdata_db.delete_friend(username)
     userdata_db.delete_userdata(username)
     user_db.delete_user_authority(username)
     user_db.delete_user(username)

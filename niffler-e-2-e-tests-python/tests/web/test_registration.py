@@ -4,28 +4,23 @@ from pages.main_page import main_page
 import allure
 
 
-@allure.epic("WEB")
-@allure.story("Registration")
-def test_registration_successful(user_for_reg, is_user_in_db, delete_user):
-    username, password = user_for_reg
-    registration_page.user_registration(username, password)
-    assert is_user_in_db(username) == username
-    login_page.login(username, password)
-    main_page.assert_main_page_title('Niffler. The coin keeper.')
-    delete_user(username)
+@allure.tag("WEB")
+@allure.epic("Registration")
+class TestRegistrationPage:
+    def test_registration_successful(self, user_for_reg, user_db, delete_user):
+        username, password = user_for_reg
+        delete_user.username = username
+        registration_page.user_registration(username, password)
+        assert user_db.is_user_in_db(username)
+        login_page.login(username, password)
+        main_page.assert_main_page_title('Niffler. The coin keeper.')
 
+    def test_registration_with_diff_passwords(self, user_for_reg):
+        username, password = user_for_reg
+        registration_page.registration_with_diff_passwords(username, password)
+        registration_page.assert_bad_registration('Passwords should be equal')
 
-@allure.epic("WEB")
-@allure.story("Registration")
-def test_registration_with_diff_passwords(user_for_reg):
-    username, password = user_for_reg
-    registration_page.registration_with_diff_passwords(username, password)
-    registration_page.assert_bad_registration('Passwords should be equal')
-
-
-@allure.epic("WEB")
-@allure.story("Registration")
-def test_registration_an_existing_user(app_user):
-    username, password = app_user
-    registration_page.user_registration(username, password)
-    registration_page.assert_bad_registration(f'Username `{username}` already exists')
+    def test_registration_an_existing_user(self, app_user):
+        username, password = app_user
+        registration_page.user_registration(username, password)
+        registration_page.assert_bad_registration(f'Username `{username}` already exists')

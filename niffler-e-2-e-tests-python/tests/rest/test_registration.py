@@ -1,37 +1,26 @@
 from http import HTTPStatus
-
 import allure
-import requests
+
+from fixtures.client_fixtures import registration_client
 
 
-@allure.epic("API")
-@allure.story("Registration")
-def test_successful_registration(envs, user_for_reg, is_user_in_db, delete_user):
-    cookie = requests.get(f"{envs.frontend_url}:9000/register").headers['x-xsrf-token']
-    username, password = user_for_reg
-    user_data = {"_csrf": cookie, "username": username, "password": password, "passwordSubmit": password}
-    with allure.step('Send post request on /register'):
-        response = requests.post(f"{envs.frontend_url}:9000/register",
-            data=user_data,
-            headers={'Content-Type': 'application/x-www-form-urlencoded', 'Cookie': f'XSRF-TOKEN={cookie}'}
-        )
-    with allure.step('Assert status code 201'):
-        assert response.status_code == HTTPStatus.CREATED
-    with allure.step('Assert username in db'):
-        assert is_user_in_db(username) == username
-    delete_user(username)
+@allure.tag("API")
+@allure.epic("Registration")
+class TestRegistration:
+    def test_successful_registration(self, envs, user_for_reg, registration_client, user_db):
+        username, password = user_for_reg
+        registration_client.username = username
+        with allure.step('Register user'):
+            response = registration_client.register_user(username, password)
+        with allure.step('Assert status code 201'):
+            assert response.status_code == HTTPStatus.CREATED
+        with allure.step('Assert username in db'):
+            assert user_db.is_user_in_db(username)
 
-
-@allure.epic("API")
-@allure.story("Registration")
-def test_bad_registration(envs, app_user):
-    cookie = requests.get(f"{envs.frontend_url}:9000/register").headers['x-xsrf-token']
-    username, password = app_user
-    user_data = {"_csrf": cookie, "username": username, "password": password, "passwordSubmit": password}
-    with allure.step('Send post request on /register'):
-        response = requests.post(f"{envs.frontend_url}:9000/register",
-            data=user_data,
-            headers={'Content-Type': 'application/x-www-form-urlencoded', 'Cookie': f'XSRF-TOKEN={cookie}'}
-        )
-    with allure.step('Assert status code 400'):
-        assert response.status_code == HTTPStatus.BAD_REQUEST
+    def test_bad_registration(self, envs, app_user, registration_client):
+        username, password = app_user
+        with allure.step('Register existing user'):
+            response = registration_client.register_user(username, password)
+            print(f"Статус код: {response}")
+        with allure.step('Assert status code 400'):
+            assert response.status_code == HTTPStatus.BAD_REQUEST

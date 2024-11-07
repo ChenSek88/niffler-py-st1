@@ -11,8 +11,6 @@ from dotenv import load_dotenv
 
 from models.config import Envs
 
-pytest_plugins = ["fixtures.auth_fixtures", "fixtures.client_fixtures", "fixtures.pages_fixtures"]
-
 
 def allure_logger(config) -> AllureReporter:
     listener: AllureListener = config.pluginmanager.get_plugin("allure_listener")

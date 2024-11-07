@@ -1,9 +1,8 @@
-import allure
 from sqlalchemy import create_engine, Engine, event
-from allure_commons.types import AttachmentType
 from sqlmodel import Session, select
 
 from models.user import User, Authority
+from utils.allure_helpers import attach_sql
 
 
 class UserDb:
@@ -11,18 +10,20 @@ class UserDb:
 
     def __init__(self, db_url: str):
         self.engine = create_engine(db_url)
-        event.listen(self.engine, "do_execute", fn=self.attach_sql)
-
-    @staticmethod
-    def attach_sql(cursor, statement, parameters, context):
-        statement_with_params = statement % parameters
-        name = statement.split(" ")[0] + " " + context.engine.url.database
-        allure.attach(statement_with_params, name=name, attachment_type=AttachmentType.TEXT)
+        event.listen(self.engine, "do_execute", fn=attach_sql)
 
     def get_user(self, username: str):
         with Session(self.engine) as session:
-            query = select(User).where(User.username == username)
-            return session.exec(query).first()
+            user = select(User).where(User.username == username)
+            return (session.exec(user).first())
+
+    def is_user_in_db(self, username: str):
+        user_from_db = self.get_user(username)
+        if user_from_db.username == username:
+            return True
+        else:
+            print(f'Username: {username} not found')
+            return False
 
     def delete_user_authority(self, username: str):
         with Session(self.engine) as session:

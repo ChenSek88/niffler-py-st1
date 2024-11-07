@@ -3,8 +3,11 @@ import allure
 from clients.oauth_client import OAuthClient
 
 
-@allure.epic("API")
-@allure.story("Auth token")
+@allure.tag("API")
+@allure.epic("Auth token")
 def test_auth_token(app_user, envs):
     username, password = app_user
-    return OAuthClient(envs).get_token(username, password)
+    oauth_client = OAuthClient(envs)
+    token = oauth_client.get_token(username, password)
+    with allure.step(f'Token is not none'):
+        assert token is not None

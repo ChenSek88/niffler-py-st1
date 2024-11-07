@@ -2,10 +2,21 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 
 from clients.friends_client import FriendsHttpClient
+from clients.registration_client import UserRegistrationHTTPClient
 from clients.spends_client import SpendsHttpClient
 from clients.userdata_client import UserdataHttpClient
 from models.enums import Category
 from models.config import Envs
+
+
+@pytest.fixture(scope="session")
+def registration_client(envs: Envs, user_db, userdata_db) -> UserRegistrationHTTPClient:
+    client = UserRegistrationHTTPClient(envs)
+    yield client
+    if hasattr(client, 'username'):
+        userdata_db.delete_userdata(client.username)
+        user_db.delete_user_authority(client.username)
+        user_db.delete_user(client.username)
 
 
 @pytest.fixture(scope="session")
@@ -18,8 +29,8 @@ def userdata_client(envs: Envs, auth_token) -> UserdataHttpClient:
     return UserdataHttpClient(envs, auth_token)
 
 
-@pytest.fixture()
-def friends_client(envs, auth_token) -> FriendsHttpClient:
+@pytest.fixture(scope="session")
+def friends_client(envs: Envs, auth_token) -> FriendsHttpClient:
     return FriendsHttpClient(envs, auth_token)
 
 
@@ -35,22 +46,22 @@ def category(request: FixtureRequest, spends_client, spend_db):
 def remove_all_categories(request: FixtureRequest, spends_client, spend_db):
     yield
     categories = spends_client.get_categories()
-    for category in categories.json():
-        spend_db.delete_category(category['id'])
+    [spend_db.delete_category(category['id']) for category in categories.json() if category]
 
 
 @pytest.fixture(params=[])
 def spends(request, spends_client):
     spends_client.add_spends(request.param)
     yield
+    spends = spends_client.get_spends()
+    [spends_client.remove_spends(spend['id']) for spend in spends.json() if spend]
 
 
 @pytest.fixture()
 def remove_all_spends(request: FixtureRequest, spends_client):
     yield
     all_spends = spends_client.get_spends()
-    for spend in all_spends.json():
-        spends_client.remove_spends(spend['id'])
+    [spends_client.remove_spends(spend['id']) for spend in all_spends.json() if spend]
 
 
 CATEGORIES = [
@@ -66,8 +77,5 @@ CATEGORIES = [
 
 
 @pytest.fixture
-def add_max_count_categories(spends_client, spend_db):
-    created_categories = []
-    for category in CATEGORIES:
-        created_category = spends_client.add_category(category)
-        created_categories.append(created_category)
+def add_max_count_categories(spends_client, remove_all_categories):
+    [spends_client.add_category(category) for category in CATEGORIES]
