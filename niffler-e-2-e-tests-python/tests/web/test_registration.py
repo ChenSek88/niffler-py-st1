@@ -9,6 +9,7 @@ import allure
 class TestRegistrationPage:
     def test_registration_successful(self, user_for_reg, user_db, delete_user):
         username, password = user_for_reg
+        # проброс username в фикстуру, для удаления юзера в teardown
         delete_user.username = username
         registration_page.user_registration(username, password)
         assert user_db.is_user_in_db(username)

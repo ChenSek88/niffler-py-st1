@@ -9,6 +9,7 @@ from fixtures.client_fixtures import registration_client
 class TestRegistration:
     def test_successful_registration(self, envs, user_for_reg, registration_client, user_db):
         username, password = user_for_reg
+        #проброс username в фикстуру, для удаления юзера в teardown
         registration_client.username = username
         with allure.step('Register user'):
             response = registration_client.register_user(username, password)
