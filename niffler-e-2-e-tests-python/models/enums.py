@@ -32,3 +32,15 @@ class Spend:
                     category=Category.SCHOOL,
                     spendDate=SPEND_DATE,
                     currency=CURRENCY)
+
+
+CATEGORIES = [
+    Category.SCHOOL,
+    Category.INTERNET,
+    Category.CARSHARING,
+    Category.PHARMACY,
+    Category.FAST_FOOD,
+    Category.SUPERMARKET,
+    Category.TELECOM,
+    Category.BANK
+]

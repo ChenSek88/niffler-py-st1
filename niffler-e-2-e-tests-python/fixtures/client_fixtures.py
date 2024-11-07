@@ -5,7 +5,7 @@ from clients.friends_client import FriendsHttpClient
 from clients.registration_client import UserRegistrationHTTPClient
 from clients.spends_client import SpendsHttpClient
 from clients.userdata_client import UserdataHttpClient
-from models.enums import Category
+from models.enums import CATEGORIES
 from models.config import Envs
 
 
@@ -62,18 +62,6 @@ def remove_all_spends(request: FixtureRequest, spends_client):
     yield
     all_spends = spends_client.get_spends()
     [spends_client.remove_spends(spend['id']) for spend in all_spends.json() if spend]
-
-
-CATEGORIES = [
-    Category.SCHOOL,
-    Category.INTERNET,
-    Category.CARSHARING,
-    Category.PHARMACY,
-    Category.FAST_FOOD,
-    Category.SUPERMARKET,
-    Category.TELECOM,
-    Category.BANK
-]
 
 
 @pytest.fixture
